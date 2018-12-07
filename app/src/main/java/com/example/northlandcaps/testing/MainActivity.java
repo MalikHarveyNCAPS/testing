@@ -17,17 +17,24 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.onesignal.OneSignal;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private EditText email,password,name;
     private Button signin,signup;
+    FirebaseUser user;
+    static String LoggedIn_User_Email;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth=FirebaseAuth.getInstance();
-
+        // OneSignal Initialization
+        OneSignal.startInit(this)
+                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+                .unsubscribeWhenNotificationsAreDisabled(true)
+                .init();
 
         signin = findViewById(R.id.loginbtn);
         signup = findViewById(R.id.signup);
@@ -37,9 +44,15 @@ public class MainActivity extends AppCompatActivity {
         //check if User is Already LoggedIn
         if(mAuth.getCurrentUser()!=null){
             //User NOT logged in
+            user = mAuth.getCurrentUser();
+            LoggedIn_User_Email = user.getEmail();
+            OneSignal.sendTag("User_ID", LoggedIn_User_Email);
             finish();
             startActivity(new Intent(getApplicationContext(),Signin.class));
+
         }
+
+
 
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,6 +134,9 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "Failed", Toast.LENGTH_SHORT).show();
                         }
                         else {
+                            user = mAuth.getCurrentUser();
+                            LoggedIn_User_Email = user.getEmail();
+                            OneSignal.sendTag("User_ID", LoggedIn_User_Email);
                             Intent i = new Intent(MainActivity.this, Signin.class);
                             finish();
                             startActivity(i);
