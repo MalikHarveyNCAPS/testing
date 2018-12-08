@@ -60,29 +60,27 @@ public class Signin extends AppCompatActivity {
         notifcation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendNotification();
+                final String[] SynergyEmails = {"ruinhard@gmail.com", "harveym4662@gmail.com","user1@gmail.com"}; //an array containing all emails of personnel
+                for (int y = 0; y < SynergyEmails.length; y++) { //repeats the sendNotif until every signed in user has gotten an notif
+                    if (SynergyEmails[y].equals(MainActivity.LoggedIn_User_Email)) { //if the phone that will recieve the notif has the same email as yours (aka your own phone), skip
+                        continue;
+                    }
+                    sendNotification(SynergyEmails[y]);
+                }
             }
         });
 
     }
 
-    private void sendNotification() {
+    private void sendNotification(final String SynergyEmail) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                final String[] SynergyEmails = {"harveym466@gmail.com", "ruinhard@gmail.com"};
-                for (int y = 0; y < SynergyEmails.length; y++) {
-                    if (SynergyEmails[y].equals(MainActivity.LoggedIn_User_Email)) {
-                        continue;
-                    }
                     int SDK_INT = android.os.Build.VERSION.SDK_INT;
                     if (SDK_INT > 8) {
                         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                                 .permitAll().build();
                         StrictMode.setThreadPolicy(policy);
-
-                        String send_email= SynergyEmails[y];
-
                         try {
                             String jsonResponse;
 
@@ -93,13 +91,13 @@ public class Signin extends AppCompatActivity {
                             con.setDoInput(true);
 
                             con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                            con.setRequestProperty("Authorization", "Basic Mzk2YWEzOGUtMWEwNC00ZmZkLWFiMTQtN2JkYjNlNWZkYTk0");
+                            con.setRequestProperty("Authorization", "Basic Mzk2YWEzOGUtMWEwNC00ZmZkLWFiMTQtN2JkYjNlNWZkYTk0"); //Rest API Key
                             con.setRequestMethod("POST");
 
                             String strJsonBody = "{"
-                                    + "\"app_id\": \"43140cf2-d7a7-4430-8404-e0c6e644a11e\","
+                                    + "\"app_id\": \"43140cf2-d7a7-4430-8404-e0c6e644a11e\"," //One Signal app id
 
-                                    + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + send_email + "\"}],"
+                                    + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + SynergyEmail + "\"}],"
 
                                     + "\"data\": {\"foo\": \"bar\"},"
                                     + "\"contents\": {\"en\": \"EMERGENCY\"}"
@@ -134,7 +132,6 @@ public class Signin extends AppCompatActivity {
                         }
                     }
                 }
-            }
         });
     }
 }
