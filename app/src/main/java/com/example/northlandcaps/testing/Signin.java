@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.onesignal.OneSignal;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -52,6 +53,7 @@ public class Signin extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mAuth.signOut();
+                OneSignal.sendTag("User_ID", "");
                 finish();
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }
